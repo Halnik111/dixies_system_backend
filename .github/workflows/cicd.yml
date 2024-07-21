@@ -13,19 +13,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{secrets.AZUREAPPSERVICE_CLIENTID_481D8747485342C29D6931B82075F734}}
-          tenant-id: ${{secrets.AZUREAPPSERVICE_TENANTID_688A517DCB18482087B76DE2D25FF1E9}}
-          subscription-id: ${{secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B826B27D338547748525DA213EA47DB9}}
-
-      - name: Azure CLI script
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Setup Node.js version
