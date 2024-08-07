@@ -42,7 +42,7 @@ app.get('/', (req, res) => {res.status(200).json('Working!!!')});
 const httpServer = createServer(app);
 export const io = new Server(httpServer, {
     cors: {
-        origin: 'http://192.168.0.111:3000/',
+        origin: 'http://192.168.0.111:3000',
     }
 });
 
