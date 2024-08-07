@@ -21,13 +21,13 @@ const corsOptions ={
 const app = express();
 
 const connect = () => {
-  // mongoose.connect(process.env.MONGO)
-  //     .then(() => {
-  //       console.log("DB Connected!");
-  //     })
-  //     .catch(err => {
-  //       throw err;
-  //     })
+  mongoose.connect(process.env.MONGO_RAIL)
+      .then(() => {
+        console.log("DB Connected!");
+      })
+      .catch(err => {
+        throw err;
+      })
 };
 
 app.use(cors(corsOptions))
