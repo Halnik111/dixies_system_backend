@@ -1,5 +1,5 @@
-import User from "/Projects/WebDev/dixies_system_backend/models/Table.js";
-import Table from "/Projects/WebDev/dixies_system_backend/models/Table.js";
+import User from "../models/User.js";
+import Table from "../models/Table.js";
 
 export const getTables = async (req, res) => {
 

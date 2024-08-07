@@ -1,5 +1,4 @@
 import Order from "../models/Order.js";
-import orders from "../routes/orders.js";
 
 export const getOrder = async (req, res) => {
     try{

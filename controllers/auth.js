@@ -1,4 +1,4 @@
-import User from "/Projects/WebDev/dixies_system_backend/models/User.js";
+import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 
