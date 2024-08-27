@@ -44,7 +44,7 @@ const httpServer = app.listen(process.env.PORT || 8080, () => {
 });
 export const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: 'http://192.168.0.111:3000',
     }
 });
 
