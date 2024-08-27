@@ -44,7 +44,7 @@ const httpServer = app.listen(process.env.PORT || 8080, () => {
 });
 export const io = new Server(httpServer, {
     cors: {
-        origin: 'https://halnik111.github.io/dixies_system',
+        origin: 'https://halnik111.github.io',
     }
 });
 
