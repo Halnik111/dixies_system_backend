@@ -1,9 +1,8 @@
-import User from "../models/User.js";
 import Table from "../models/Table.js";
 
 export const getTables = async (req, res) => {
 
-    const tables = await User.find({});
+    const tables = await Table.find({});
     if (tables) res.status(200).json(tables);
 };
 
