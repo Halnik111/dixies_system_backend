@@ -48,7 +48,8 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
     cors: {
-        origin: 'https://dixiessystem-production.up.railway.app',
+        origin: 'http://localhost:3000',
+        // origin: 'https://dixiessystem-production.up.railway.app',
     }
 });
 
@@ -76,7 +77,11 @@ io.on('connection', (socket) => {
     }));
 });
 
+// app.listen(process.env.PORT || 8080, () => {
+//     console.log("Connected!");
+//     connect();
+// });
+
 httpServer.listen(process.env.PORT || 8080, () => {
-    console.log("Connected!");
     connect();
 });
