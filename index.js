@@ -39,12 +39,13 @@ app.use('/order', orderRoutes);
 app.use('/meals', mealRoutes);
 app.get('/', (req, res) => {res.status(200).json('Working!!!')});
 
-const server = createServer(app);
+const httpServer = createServer(app);
 
-const httpServer = app.listen(process.env.PORT || 8080, () => {
-    console.log("Connected!");
-    connect();
-});
+// const httpServer = app.listen(process.env.PORT || 8080, () => {
+//     console.log("Connected!");
+//     connect();
+// });
+
 export const io = new Server(httpServer, {
     cors: {
         origin: 'https://dixiessystem-production.up.railway.app',
@@ -75,7 +76,7 @@ io.on('connection', (socket) => {
     }));
 });
 
-server.listen(process.env.PORT || 8080, () => {
+httpServer.listen(process.env.PORT || 8080, () => {
     console.log("Connected!");
     connect();
 });
