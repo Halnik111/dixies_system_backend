@@ -7,6 +7,7 @@ import authRoutes from "./routes/auths.js";
 import orderRoutes from './routes/orders.js';
 import mealRoutes from './routes/meals.js';
 import {Server} from 'socket.io';
+import { createServer } from 'http';
 import {closeTable} from "./controllers/table.js";
 
 
@@ -38,6 +39,8 @@ app.use('/order', orderRoutes);
 app.use('/meals', mealRoutes);
 app.get('/', (req, res) => {res.status(200).json('Working!!!')});
 
+const server = createServer(app);
+
 const httpServer = app.listen(process.env.PORT || 8080, () => {
     console.log("Connected!");
     connect();
@@ -65,5 +68,14 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected');
-    })
+    });
+
+    socket.on('test', (data => {
+        io.emit('testEmit', data)
+    }));
+});
+
+server.listen(process.env.PORT || 8080, () => {
+    console.log("Connected!");
+    connect();
 });
