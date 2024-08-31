@@ -48,8 +48,8 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
     cors: {
-        // origin: 'http://localhost:3000',
-        origin: 'https://dixiessystem-production.up.railway.app',
+        origin: 'http://localhost:3000',
+        // origin: 'https://dixiessystem-production.up.railway.app',
     }
 });
 
