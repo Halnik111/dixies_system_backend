@@ -14,7 +14,8 @@ export const getOrder = async (req, res) => {
 export const newOrder = async (req, res) => {
     try{
         const model = req.body;
-        const order = new Order({meals: model.orders, openedBy: model.currentUser, tableId: model.table, price: model.totalPrice})
+        console.log(model)
+        const order = new Order({meals: model.orders, openedBy: model.currentUser, tableId: model.table, price: model.totalPriceRound})
         await order.save();
         res.status(201).json(order)
     } catch (err) {
