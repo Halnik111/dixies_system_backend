@@ -55,3 +55,13 @@ export const signOut = async (req, res) => {
         res.status(500).json("message: " + err.message);
     }
 }
+
+export const pingLocalStorage = async (req, res ) => {
+    try {
+        if (!req.cookies.token) {
+            res.status(200).json('not found')
+        }
+    }  catch (err) {
+        res.status(500).json("message: " + err.message);
+    }
+}
