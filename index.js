@@ -21,7 +21,7 @@ const corsOptions ={
 const app = express();
 
 const connect = () => {
-  mongoose.connect(process.env.MONGO)
+  mongoose.connect(process.env.MONGO_RAIL)
       .then(() => {
         console.log("DB Connected!");
       })
