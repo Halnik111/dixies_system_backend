@@ -9,6 +9,7 @@ import mealRoutes from './routes/meals.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
 import {closeTable} from "./controllers/table.js";
+import {authorizeRoles, verifyToken} from "./middleware/verifyToken.js";
 
 
 const corsOptions ={
@@ -38,6 +39,12 @@ app.use('/auth', authRoutes);
 app.use('/order', orderRoutes);
 app.use('/meals', mealRoutes);
 app.get('/', (req, res) => {res.status(200).json('Working!!!')});
+app.get('/dashboard', verifyToken, authorizeRoles('User', "Manager", "Admin"), (req, res) => {
+    res.status(200).json('Dashboard');
+});
+app.get('/settings', verifyToken, authorizeRoles('User', "Manager", "Admin"), (req, res) => {
+    res.status(200).json('Settings');
+});
 
 const httpServer = createServer(app);
 

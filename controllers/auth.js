@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 
 export const signUp = async (req, res) => {
     try{
-        const {name, password} = req.body;
+        const {name, password, role} = req.body;
 
         const hashPassword = await bcrypt.hash(password, 10);
         console.log(hashPassword);
 
-        const newUser = new User({name: name, password: hashPassword});
+        const newUser = new User({name: name, password: hashPassword, role: role || "user"});
         await newUser.save();
         res.status(201).json(newUser);
     } catch (err) {
@@ -19,12 +19,13 @@ export const signUp = async (req, res) => {
 
 export const signIn = async (req, res) => {
     try {
-        const user = await User.findOne({name: req.body.name});
+        const {name, password} = req.body;
+        const user = await User.findOne({name: name});
         if (!user) {
             return res.status(404).json("User not found");
         }
 
-        const comparePasswords = await bcrypt.compare(req.body.password, user.password);
+        const comparePasswords = await bcrypt.compare(password, user.password);
         if(!comparePasswords) {
             res.status(400).json("Incorrect password");
         }
@@ -34,7 +35,8 @@ export const signIn = async (req, res) => {
             delete user.password;
             const token = jwt.sign({
                 id: user._id,
-                isAdmin: true,
+                role: user.role,
+                name: user.name,
             }, process.env.JWT, {expiresIn: age});
             res.cookie("token", token, {
                 httpOnly: true,
@@ -49,18 +51,19 @@ export const signIn = async (req, res) => {
 
 export const signOut = async (req, res) => {
     try {
-        res.clearCookie("token").status(200).json("Disconnected.")
+        res.clearCookie("token", {
+            httpOnly: true,
+            // secure: true,
+        }).status(200).json("Disconnected.")
 
     }  catch (err) {
         res.status(500).json("message: " + err.message);
     }
 }
 
-export const pingLocalStorage = async (req, res ) => {
+export const pingMe = async (req, res) => {
     try {
-        if (!req.cookies.token) {
-            res.status(200).json('not found')
-        }
+        res.json({ id: req.user.id, role: req.user.role, name: req.user.name });
     }  catch (err) {
         res.status(500).json("message: " + err.message);
     }
