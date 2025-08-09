@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import mongoose from "mongoose";
 
 export const getOrder = async (req, res) => {
     try{
@@ -22,3 +23,18 @@ export const newOrder = async (req, res) => {
         res.status(409).json("message: " + err.message);
     }
 };
+
+export const getAllActiveOrders = async (req, res) => {
+    let orders = req.body.orders;
+    // Filter out empty or invalid IDs
+    orders = orders.filter(id => mongoose.Types.ObjectId.isValid(id));
+    try{
+        await Order.find({ _id: { $in: orders } })
+            .then(data => {
+                console.log(data + " data")
+                res.status(200).json(data);
+            })
+    } catch (err) {
+        res.status(409).json("message: " + err.message);
+    }
+}
