@@ -9,6 +9,8 @@ import mealRoutes from './routes/meals.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
 import {closeTable} from "./controllers/table.js";
+import {authorizeRoles, verifyToken} from "./middleware/verifyToken.js";
+import * as http from "node:http";
 
 
 const corsOptions ={
@@ -19,6 +21,12 @@ const corsOptions ={
 }
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: process.env.URL,
+    }
+});
 
 const connect = () => {
   mongoose.connect(process.env.MONGO)
@@ -38,49 +46,29 @@ app.use('/auth', authRoutes);
 app.use('/order', orderRoutes);
 app.use('/meals', mealRoutes);
 app.get('/', (req, res) => {res.status(200).json('Working!!!')});
-
-const httpServer = createServer(app);
-
-// const httpServer = app.listen(process.env.PORT || 8080, () => {
-//     console.log("Connected!");
-//     connect();
-// });
-
-export const io = new Server(httpServer, {
-    cors: {
-        origin: process.env.URL,
-    }
+app.get('/dashboard', verifyToken, authorizeRoles('User', "Manager", "Admin"), (req, res) => {
+    res.status(200).json('Dashboard');
 });
-
+app.get('/settings', verifyToken, authorizeRoles('User', "Manager", "Admin"), (req, res) => {
+    res.status(200).json('Settings');
+});
 
 io.on('connection', (socket) => {
     console.log('A user connected');
     console.log(socket.id);
 
-    socket.on("openTable", (data) => {
+    socket.on("tableChange", (data) => {
         console.log(data);
-        io.emit('tableOpened', data);
+        io.emit('tableChanged', data);
     });
 
     socket.on("closeTable", (data => {
         console.log(data);
         io.emit('tableClosed', data)
-    }))
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
-
-    socket.on('test', (data => {
-        io.emit('testEmit', data)
     }));
 });
 
-// app.listen(process.env.PORT || 8080, () => {
-//     console.log("Connected!");
-//     connect();
-// });
-
-httpServer.listen(process.env.PORT || 8080, () => {
+server.listen(process.env.PORT || 8080, () => {
     connect();
+    console.log(`Server is running on port ${process.env.PORT || 8080}`);
 });
