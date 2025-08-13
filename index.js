@@ -22,9 +22,7 @@ const corsOptions ={
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    transports : ['websocket'],
-    pingTimeout: 60000,
-    pingInterval: 25000,
+    methods: ["GET", "POST", "PUT", "DELETE"],
     cors: {
         origin: process.env.URL,
     }
