@@ -7,7 +7,6 @@ import authRoutes from "./routes/auths.js";
 import orderRoutes from './routes/orders.js';
 import mealRoutes from './routes/meals.js';
 import {Server} from 'socket.io';
-import { createServer } from 'http';
 import {closeTable} from "./controllers/table.js";
 import {authorizeRoles, verifyToken} from "./middleware/verifyToken.js";
 import * as http from "node:http";
@@ -23,6 +22,9 @@ const corsOptions ={
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
+    transports : ['websocket'],
+    pingTimeout: 60000,
+    pingInterval: 25000,
     cors: {
         origin: process.env.URL,
     }
