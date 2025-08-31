@@ -11,7 +11,7 @@ const TableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    orderId: {
+    tableOrderId: {
         type: String,
     },
     },

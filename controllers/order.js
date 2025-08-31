@@ -1,9 +1,10 @@
-import Order from "../models/Order.js";
+import TableOrder from "../models/TableOrder.js";
 import mongoose from "mongoose";
+import Order from "../models/Order.js";
 
 export const getOrder = async (req, res) => {
     try{
-        await Order.findById(req.params.id)
+        await TableOrder.findById(req.params.id)
             .then(data => {
                res.status(200).json(data);
             })
@@ -15,7 +16,7 @@ export const getOrder = async (req, res) => {
 export const newOrder = async (req, res) => {
     try{
         const model = req.body;
-        const order = new Order({meals: model.orders, openedBy: model.currentUser, tableId: model.table, price: model.totalPriceRound})
+        const order = new TableOrder({orderIDs: model.orders, openedBy: model.openedBy, tableId: model.table, price: model.totalPriceRound})
         await order.save();
         res.status(201).json(order)
     } catch (err) {
@@ -23,9 +24,25 @@ export const newOrder = async (req, res) => {
     }
 };
 
+export const newOrders = async (req, res) => {
+    try {
+        const orders = req.body.orders.map(order => ({
+            orderIDs: order.orders,
+            openedBy: order.currentUser,
+            tableId: order.table,
+            price: order.totalPriceRound
+        }));
+        
+        const createdOrders = await TableOrder.insertMany(orders);
+        res.status(201).json(createdOrders);
+    } catch (err) {
+        res.status(409).json("message: " + err.message);
+    }
+}
+
 export const editOrder = async (req, res) => {
     try {
-        const updatedOrder = await Order.findByIdAndUpdate(
+        const updatedOrder = await TableOrder.findByIdAndUpdate(
             req.params.id,
             {
                 meals: req.body.orders,
@@ -46,11 +63,8 @@ export const editOrder = async (req, res) => {
 }
 
 export const getAllActiveOrders = async (req, res) => {
-    let orders = req.body.orders;
-    // Filter out empty or invalid IDs
-    orders = orders.filter(id => mongoose.Types.ObjectId.isValid(id));
     try{
-        await Order.find({ _id: { $in: orders } })
+        await Order.find({ closedAt: null})
             .then(data => {
                 res.status(200).json(data);
             })
@@ -61,8 +75,9 @@ export const getAllActiveOrders = async (req, res) => {
 
 export const closeOrder = async (req, res) => {
     try {
-        const orderId = req.params.id;
-        const closedOrder = await Order.findByIdAndUpdate(
+        const orderId = req.body.order;
+        console.log('asd')
+        const closedOrder = await TableOrder.findByIdAndUpdate(
             orderId,
             { closedAt: new Date() },
             { new: true }
@@ -79,7 +94,7 @@ export const closeOrder = async (req, res) => {
 export const serveOrder = async (req, res) => {
     try {
         const orderId = req.params.id;
-        const closedOrder = await Order.findByIdAndUpdate(
+        const closedOrder = await TableOrder.findByIdAndUpdate(
             orderId,
             { servedAt: new Date() },
             { new: true }
