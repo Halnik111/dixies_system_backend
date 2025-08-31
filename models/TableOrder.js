@@ -1,29 +1,36 @@
 import mongoose from "mongoose";
 import {DateTime} from "luxon";
 
-const Order = new mongoose.Schema({
-        mealIDs: {
+const TableOrder = new mongoose.Schema({
+        orderIds: {
             type: [String],
             required: true,
         },
-        tableOrderId: {
+        openedBy: {
+            type: Object,
+            required: true,
+        },
+        tableId: {
             type: String,
             required: true
-        },
-        message: {
-            type: String,
-            default: "",
-            required: false,
         },
         price: {
             type: Number,
             required: true
         },
+        servedAt: {
+            type: Date,
+            default: null
+        },
+        closedAt: {
+            type: Date,
+            default: null
+        },
     },
     {timestamps: true}
 );
 
-Order.set("toJSON", {
+TableOrder.set("toJSON", {
     transform: (doc, ret) => {
         const formatDate = (date) =>
             DateTime.fromJSDate(date)
@@ -41,4 +48,4 @@ Order.set("toJSON", {
     },
 });
 
-export default mongoose.model("Orders", Order, "orders");
+export default mongoose.model("TableOrders", TableOrder, "tableOrders");

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import tableRoutes from "./routes/tables.js"
 import authRoutes from "./routes/auths.js";
 import orderRoutes from './routes/orders.js';
+import tableOrderRoutes from './routes/tableOrders.js';
 import mealRoutes from './routes/meals.js';
 import {Server} from 'socket.io';
 import {closeTable} from "./controllers/table.js";
@@ -29,7 +30,7 @@ const io = new Server(server, {
 });
 
 const connect = () => {
-  mongoose.connect(process.env.MONGO)
+  mongoose.connect(process.env.MONGO_NEW)
       .then(() => {
         console.log("DB Connected!");
       })
@@ -44,6 +45,7 @@ app.use(cookieParser());
 app.use("/tables", tableRoutes);
 app.use('/auth', authRoutes);
 app.use('/order', orderRoutes);
+app.use('/tableOrder', tableOrderRoutes)
 app.use('/meals', mealRoutes);
 app.get('/', (req, res) => {res.status(200).json('Working!!!')});
 app.get('/dashboard', verifyToken, authorizeRoles('User', "Manager", "Admin"), (req, res) => {
@@ -66,6 +68,11 @@ io.on('connection', (socket) => {
         console.log(data);
         io.emit('tableClosed', data)
     }));
+
+    socket.on("mealsChange", (data) => {
+        console.log(data);
+        io.emit('mealsChanged', data);
+    });
 });
 
 server.listen(process.env.PORT || 8080, () => {

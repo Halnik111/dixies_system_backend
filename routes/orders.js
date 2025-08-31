@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get('/getOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), getOrder);
 router.post('/newOrder', verifyToken, authorizeRoles('User', "Manager", "Admin"), newOrder);
-router.post('/getAllActiveOrders', verifyToken, authorizeRoles('User', "Manager", "Admin"), getAllActiveOrders);
+router.get('/getAllActiveOrders', verifyToken, authorizeRoles('User', "Manager", "Admin"), getAllActiveOrders);
 router.put('/editOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), editOrder);
 router.put('/closeOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), closeOrder);
 router.put('/serveOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), serveOrder);
