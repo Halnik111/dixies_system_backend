@@ -17,6 +17,20 @@ export const signUp = async (req, res) => {
     }
 }
 
+export const getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json("User not found");
+        }
+        user.password = '';
+        delete user.password;
+        res.status(200).json(user);
+    }  catch (err) {
+        res.status(500).json("message: " + err.message);
+    }
+}
+
 export const signIn = async (req, res) => {
     try {
         const {name, password} = req.body;

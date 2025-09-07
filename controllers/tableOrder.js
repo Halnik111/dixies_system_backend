@@ -1,6 +1,7 @@
 import TableOrder from "../models/TableOrder.js";
 import mongoose, {Types} from "mongoose";
 import Order from "../models/Order.js";
+import {DateTime} from "luxon";
 
 
 export const getTableOrder = async (req, res) => {
@@ -188,7 +189,20 @@ export const getAllActiveTableOrdersWithOrders = async (req, res) => {
             { $sort: { createdAt: -1 } }
         ]);
 
-        res.json(result);
+        const formatDate = (date) =>
+            date
+                ? DateTime.fromJSDate(date).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm:ss")
+                : null;
+        
+        const formatted = result.map(doc => ({
+            ...doc,
+            createdAt: formatDate(doc.createdAt),
+            updatedAt: formatDate(doc.updatedAt),
+            servedAt: formatDate(doc.servedAt),
+            closedAt: formatDate(doc.closedAt),
+        }));
+        
+        res.json(formatted);
     } catch (e) {
         console.error(e);
         res.status(500).json({ message: 'Failed to load active table orders' });
@@ -197,7 +211,7 @@ export const getAllActiveTableOrdersWithOrders = async (req, res) => {
 
 export const getAllActiveTableOrders = async () => {
     try {
-        return await TableOrder.aggregate([
+        const result = await TableOrder.aggregate([
             // 1) only active tableOrders
             {$match: {closedAt: null}},
 
@@ -238,6 +252,23 @@ export const getAllActiveTableOrders = async () => {
             // 5) optional: newest first
             {$sort: {createdAt: -1}}
         ]);
+
+        const formatDate = (date) =>
+            date
+                ? DateTime.fromJSDate(date).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm:ss")
+                : null;
+
+        const formatted = result.map(doc => ({
+            ...doc,
+            createdAt: formatDate(doc.createdAt),
+            updatedAt: formatDate(doc.updatedAt),
+            servedAt: formatDate(doc.servedAt),
+            closedAt: formatDate(doc.closedAt),
+        }));
+        
+        console.log(formatted);
+        
+        return formatted;
     } catch (e) {
         console.error(e);
     }
