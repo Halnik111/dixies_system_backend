@@ -11,6 +11,7 @@ import {Server} from 'socket.io';
 import {closeTable} from "./controllers/table.js";
 import {authorizeRoles, verifyToken} from "./middleware/verifyToken.js";
 import * as http from "node:http";
+import {getAllActiveTableOrders, getAllActiveTableOrdersWithOrders} from "./controllers/tableOrder.js";
 
 
 const corsOptions ={
@@ -59,15 +60,32 @@ io.on('connection', (socket) => {
     console.log('A user connected');
     console.log(socket.id);
 
-    socket.on("tableChange", (data) => {
-        console.log(data);
-        io.emit('tableChanged', data);
+    socket.on("tableChange", async ({tableId}, ack) => {
+        try {
+            const tableOrders = await getAllActiveTableOrders();
+            ack({ ok: true, tableOrders });
+            io.emit('tableChanged', tableOrders);
+            console.log('aaa')
+        } catch (e) {
+            console.log('asd')
+            //ack({ ok: false, error: e.message });
+        }
+        
+        const broadcastOrdersUpdate = async () => {
+            const tableOrders = await getAllActiveTableOrdersWithOrders();
+        }
     });
 
-    socket.on("closeTable", (data => {
-        console.log(data);
-        io.emit('tableClosed', data)
-    }));
+    socket.on("closeTable", async (ack) => {
+        try {
+            const tableOrders = await getAllActiveTableOrders();
+            ack({ ok: true, tableOrders });
+            io.emit('tableClosed', tableOrders);
+        } catch (e) {
+            console.log('asd')
+            //ack({ ok: false, error: e.message });
+        }
+    });
 
     socket.on("mealsChange", (data) => {
         console.log(data);

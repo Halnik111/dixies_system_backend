@@ -1,7 +1,6 @@
 import TableOrder from "../models/TableOrder.js";
 import mongoose, {Types} from "mongoose";
 import Order from "../models/Order.js";
-import Table from "../models/Table.js";
 
 
 export const getTableOrder = async (req, res) => {
@@ -193,5 +192,53 @@ export const getAllActiveTableOrdersWithOrders = async (req, res) => {
     } catch (e) {
         console.error(e);
         res.status(500).json({ message: 'Failed to load active table orders' });
+    }
+};
+
+export const getAllActiveTableOrders = async () => {
+    try {
+        return await TableOrder.aggregate([
+            // 1) only active tableOrders
+            {$match: {closedAt: null}},
+
+            // 2) convert string ids -> ObjectId[]
+            {
+                $addFields: {
+                    orderObjectIds: {
+                        $map: {
+                            input: '$orderIds',
+                            as: 'oid',
+                            in: {
+                                $cond: [
+                                    {$regexMatch: {input: '$$oid', regex: /^[0-9a-fA-F]{24}$/}},
+                                    {$toObjectId: '$$oid'},
+                                    // if somehow not a valid ObjectId string, drop it
+                                    // you could also keep it and let the lookup miss
+                                    '$$REMOVE'
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+
+            // 3) lookup full orders
+            {
+                $lookup: {
+                    from: 'orders',                // <- collection name
+                    localField: 'orderObjectIds',  // <- ObjectId array we just built
+                    foreignField: '_id',
+                    as: 'orders'
+                }
+            },
+
+            // 4) optional: clean helper field
+            {$project: {orderObjectIds: 0}},
+
+            // 5) optional: newest first
+            {$sort: {createdAt: -1}}
+        ]);
+    } catch (e) {
+        console.error(e);
     }
 };
