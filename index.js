@@ -12,6 +12,7 @@ import {closeTable} from "./controllers/table.js";
 import {authorizeRoles, verifyToken} from "./middleware/verifyToken.js";
 import * as http from "node:http";
 import {getAllActiveTableOrders, getAllActiveTableOrdersWithOrders} from "./controllers/tableOrder.js";
+import Meal from './models/Meal.js'; // Add this import at the top
 
 
 const corsOptions ={
@@ -82,14 +83,19 @@ io.on('connection', (socket) => {
             ack({ ok: true, tableOrders });
             io.emit('tableClosed', tableOrders);
         } catch (e) {
-            console.log('asd')
+            console.log('error close table')
             //ack({ ok: false, error: e.message });
         }
     });
 
-    socket.on("mealsChange", (data) => {
-        console.log(data);
-        io.emit('mealsChanged', data);
+    socket.on("mealsChange", async (ack) => {
+        try {
+            const meals = await Meal.find({});
+            ack({ ok: true, meals });
+            io.emit('mealsChanged', meals);
+        } catch (e) {
+            console.log('error meals');
+        }
     });
 });
 
