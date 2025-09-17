@@ -4,7 +4,7 @@ import {
     closeOrder,
     editOrder,
     getAllActiveOrders,
-    getOrder,
+    getOrder, listOrders,
     newOrder,
     serveOrder,
 } from "../controllers/order.js";
@@ -18,4 +18,5 @@ router.get('/getAllActiveOrders', verifyToken, authorizeRoles('User', "Manager",
 router.put('/editOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), editOrder);
 router.put('/closeOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), closeOrder);
 router.put('/serveOrder/:id', verifyToken, authorizeRoles('User', "Manager", "Admin"), serveOrder);
+router.get('/listOrders', verifyToken, authorizeRoles('User', "Manager", "Admin"), listOrders);
 export default router;

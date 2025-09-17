@@ -24,21 +24,28 @@ export const newOrder = async (req, res) => {
     }
 };
 
-export const newOrders = async (req, res) => {
+export const listOrders = async (req, res) => {
     try {
-        const orders = req.body.orders.map(order => ({
-            orderIDs: order.orders,
-            openedBy: order.currentUser,
-            tableId: order.table,
-            price: order.totalPriceRound
-        }));
-        
-        const createdOrders = await TableOrder.insertMany(orders);
-        res.status(201).json(createdOrders);
+        const { since, until, limit = 500, sort = "desc" } = req.query;
+
+        const q = {};
+        if (since || until) {
+            q.createdAt = {};
+            if (since) q.createdAt.$gte = new Date(since);
+            q.createdAt.$lt = new Date(until || Date.now());
+        }
+
+        const items = await Order.find(q)
+            .sort({ createdAt: sort === "asc" ? 1 : -1 })
+            .limit(Math.min(Number(limit) || 500, 5000))
+            .lean();
+
+        res.status(200).json({ orders: items });
     } catch (err) {
-        res.status(409).json("message: " + err.message);
+        res.status(500).json({ message: err.message || "Server error" });
     }
-}
+};
+
 
 export const editOrder = async (req, res) => {
     try {
