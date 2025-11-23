@@ -2,6 +2,9 @@ import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 
+
+const isProd = process.env.PRODUCTION === 'true';
+
 export const signUp = async (req, res) => {
     try{
         const {name, password, role} = req.body;
@@ -41,7 +44,7 @@ export const signIn = async (req, res) => {
 
         const comparePasswords = await bcrypt.compare(password, user.password);
         if(!comparePasswords) {
-            res.status(400).json("Incorrect password");
+            return res.status(400).json("Incorrect password");
         }
         else {
             const age = 1000 * 60 * 60 * 24 * 7;
@@ -54,7 +57,8 @@ export const signIn = async (req, res) => {
             }, process.env.JWT, {expiresIn: age});
             res.cookie("token", token, {
                 httpOnly: true,
-                // secure: true,
+                sameSite: 'none',
+                secure: true,
                 maxAge: age,
             }).status(200).json(user)
         }
