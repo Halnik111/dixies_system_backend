@@ -27,8 +27,10 @@ const server = http.createServer(app);
 const io = new Server(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
     cors: {
-        origin: process.env.URL,
-    }
+        origin: "https://dixiessystem-production.up.railway.app",
+        credentials: true,
+        
+    },
 });
 
 const connect = () => {

@@ -57,8 +57,8 @@ export const signIn = async (req, res) => {
             }, process.env.JWT, {expiresIn: age});
             res.cookie("token", token, {
                 httpOnly: true,
-                sameSite: 'none',
-                secure: true,
+                // sameSite: 'none',
+                // secure: true,
                 maxAge: age,
             }).status(200).json(user)
         }
