@@ -16,7 +16,7 @@ import Meal from './models/Meal.js'; // Add this import at the top
 
 
 const corsOptions ={
-  origin: "https://dixiessystem-production.up.railway.app",
+  origin: process.env.URL,
   credentials: true,
   allowCredentials: true,            //access-control-allow-credentials:true
   optionSuccessStatus:200,
@@ -27,7 +27,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
     cors: {
-        origin: "https://dixiessystem-production.up.railway.app",
+        origin: process.env.URL,
         credentials: true,
         
     },
